@@ -20,5 +20,7 @@ module.exports = {
     IInjectionBinding: function (nm) {
         return new Interface(nm, ["ToSingleton", "ToValue", "SetValue", "CrossContext", "GetSupply", "SupplyTo", "Unsupply", "ToInject", "Bind", "To", "ToName", "Named"]);
     },
-
+    IInjectionBinder: function (nm) {
+        return new Interface(nm, ["GetInstance", "GetSupplier", "Reflect", "ReflectAll", "ResolveBinding", "Unsupply", "Bind", "GetBinding", "Unbind", "WhitelistBindings", "ConsumeBindings"]);
+    },
 }
