@@ -38,31 +38,31 @@ cc.Class({
 
     },
     mapBindings(){
-        injectionBinder.Bind().To().ToSingleton();
+        this.injectionBinder.Bind().To().ToSingleton();
 
-        mediationBinder.Bind().To();
-        mediationBinder.Bind().To();
-        mediationBinder.Bind().To();
+        this.mediationBinder.Bind().To();
+        this.mediationBinder.Bind().To();
+        this.mediationBinder.Bind().To();
 
         if(this == Context.firstContext)
         {
-            commandBinder.Bind(ContextEvent.START).To().To().Once().InSequence()
+            this.commandBinder.Bind(ContextEvent.START).To().To().Once().InSequence()
         }else
         {
-            commandBinder.Bind(ContextEvent.START).To().To().To().Once().InSequence()
+            this.commandBinder.Bind(ContextEvent.START).To().To().To().Once().InSequence()
         }
 
-        commandBinder.Bind(GameEvent.ADD_TO_SCORE).To();
-        commandBinder.Bind(GameEvent.SHIP_DESTROYED).To();
-        commandBinder.Bind(GameEvent.GAME_OVER).To();
-        commandBinder.Bind(GameEvent.REPLAY).To();
-        commandBinder.Bind(GameEvent.REMOVE_SOCIAL_CONTEXT).To();
+        this.commandBinder.Bind(GameEvent.ADD_TO_SCORE).To();
+        this.commandBinder.Bind(GameEvent.SHIP_DESTROYED).To();
+        this.commandBinder.Bind(GameEvent.GAME_OVER).To();
+        this.commandBinder.Bind(GameEvent.REPLAY).To();
+        this.commandBinder.Bind(GameEvent.REMOVE_SOCIAL_CONTEXT).To();
     },
     addCoreComponents()
     {
         this._super();
-        injectionBinder.Unbind();
-        injectionBinder.Bind().To().ToSingleton();
+        //this.injectionBinder.Unbind();
+        //this.injectionBinder.Bind().To().ToSingleton();
     }
     // update (dt) {},
 });
