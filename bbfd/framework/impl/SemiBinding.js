@@ -46,9 +46,9 @@ let SemiBinding = cc.Class({
         },
         value: {
             get () {
-                if (constraint.Equals(BindingConstraintType.ONE))
+                if (this.constraint.Equals(BindingConstraintType.ONE))
 				{
-					return (objectValue == null) ? null : objectValue [0];
+					return (this.objectValue == null) ? null : this.objectValue [0];
 				}
 				return objectValue;
             }
@@ -59,8 +59,7 @@ let SemiBinding = cc.Class({
     // 构造函数中初始化实现的接口方法
     //=======================================================================================
     ctor(){
-        const isemibinding = iImplements.IManagedList("SemiBinding");
-        isemibinding.ensureImplements([this]);
+        iImplements.IManagedList("SemiBinding").ensureImplements([this]);
         this.constraint = BindingConstraintType.ONE;
         this.uniqueValues = true;
     },
@@ -69,18 +68,18 @@ let SemiBinding = cc.Class({
     // -继承接口方法
     //=======================================================================================
     Add () {
-        if (objectValue == null || constraint == BindingConstraintType.ONE)
+        if (this.objectValue == null || constraint == BindingConstraintType.ONE)
         {
-            objectValue = Object.create(null);
+            this.objectValue = Object.create(null);
         }
         else
         {
             if (uniqueValues)
             {
-                var aa = objectValue.Length;
+                var aa = this.objectValue.Length;
                 for (let a = 0; a < aa; a++)
                 {
-                    var val = objectValue[a];
+                    var val = this.objectValue[a];
                     if (val.Equals(o))
                     {
                         return this;
@@ -88,14 +87,15 @@ let SemiBinding = cc.Class({
                 }
             }
             
-            var tempList = objectValue;
+            var tempList = this.objectValue;
             var len = tempList.Length;
-            objectValue = Object.create(null);
-            tempList.CopyTo (objectValue, 0); //数组对象的复制
+            this.objectValue = Object.create(null);
+            tempList.CopyTo (this.objectValue, 0); //数组对象的复制
         }
-        objectValue [objectValue.Length - 1] = o;
+        this.objectValue [objectValue.Length - 1] = o;
         return this;
     },
+    
     AddList(list){
         list.forEach(element => {
             Add (element);
