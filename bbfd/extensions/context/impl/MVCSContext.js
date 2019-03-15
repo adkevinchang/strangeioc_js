@@ -88,14 +88,14 @@ let MVCSContext = cc.Class({
     },
     addCoreComponents() {
         this._super();
-        injectionBinder.Bind().Bind().ToValue();
-        injectionBinder.Bind().Bind().ToValue();
-        injectionBinder.Bind().Bind().ToValue();
-        injectionBinder.Bind().Bind().ToValue();
-        injectionBinder.Bind().Bind().ToValue();
-        injectionBinder.Bind().Bind().ToValue();
-        injectionBinder.Bind().Bind().ToValue();
-        injectionBinder.Bind().Bind().ToValue();
+        //this.injectionBinder.Bind().Bind().ToValue();
+        //this.injectionBinder.Bind().Bind().ToValue();
+        //this.injectionBinder.Bind().Bind().ToValue();
+        //this.injectionBinder.Bind().Bind().ToValue();
+        //this.injectionBinder.Bind().Bind().ToValue();
+        //this.injectionBinder.Bind().Bind().ToValue();
+        //this.injectionBinder.Bind().Bind().ToValue();
+        //this.injectionBinder.Bind().Bind().ToValue();
     },
     instantiateCoreComponents() {
         this._super();

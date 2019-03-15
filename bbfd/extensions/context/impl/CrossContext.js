@@ -14,6 +14,8 @@ var Context = require("Context");
 var ContextKeys = require("ContextKeys");
 var CrossContextInjectionBinder = require("CrossContextInjectionBinder");
 var CrossContextBridge = require("CrossContextBridge");
+var InjectionBinder = require("InjectionBinder");
+var Inject = require("Inject");
 
 let CrossContext = cc.Class({
     extends: Context,
@@ -28,7 +30,10 @@ let CrossContext = cc.Class({
         // },
         injectionBinder: {
             get() {
-                return this._injectionBinder ? this._injectionBinder : this._injectionBinder = new CrossContextInjectionBinder();
+                this._injectionBinder = this._injectionBinder ? this._injectionBinder : this._injectionBinder = new CrossContextInjectionBinder();
+                //注入者初始化注入绑定者
+                Inject.initialize(this._injectionBinder);
+                return this._injectionBinder;
             },
             set(value) {
                 this._injectionBinder = value;
@@ -72,9 +77,21 @@ let CrossContext = cc.Class({
         if (this.injectionBinder.CrossContextBinder === null) {
             this.injectionBinder.CrossContextBinder = new CrossContextInjectionBinder();
         }
+        /*
+        var maps = Object.create(null);
+        maps[DispatcherImplements.ITriggerable] = 100;
+        cc.log('++++++++++++++++++++++++++++++++++++++++++++++'+maps[DispatcherImplements.ITriggerable]);
+        for (let index = 0; index < 1000; index++) {
+            maps[DispatcherImplements.ITriggerable] = 100+'kevin'+index;
+            cc.log('=============================================='+maps[DispatcherImplements.ITriggerable]);
+        }
+        
+        Inject.GetInstance(DispatcherImplements.ITriggerable);*/
         if (Context.firstContext == this) {
-            this.injectionBinder.Bind(DispatcherImplements.IEventDispatcher).To(EventDispatcher).ToSingleton().ToName(ContextKeys.CROSS_CONTEXT_DISPATCHER).CrossContext();
-            this.injectionBinder.Bind(CrossContextBridge).ToSingleton().CrossContext();
+            cc.log("kevin:");
+            cc.log(cc.js.isChildClassOf(CrossContextInjectionBinder,InjectionBinder));
+            //this.injectionBinder.Bind(DispatcherImplements.IEventDispatcher).To(EventDispatcher).ToSingleton().ToName(ContextKeys.CROSS_CONTEXT_DISPATCHER).CrossContext();
+            //this.injectionBinder.Bind(CrossContextBridge).ToSingleton().CrossContext();
         }
     },
     /**

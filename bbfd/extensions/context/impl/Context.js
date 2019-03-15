@@ -67,7 +67,7 @@ let Context = cc.Class({
         this.addCoreComponents();
         this.autoStartup = (flags & ContextStartupFlags.MANUAL_LAUNCH) != ContextStartupFlags.MANUAL_LAUNCH;
         if ((flags & ContextStartupFlags.MANUAL_MAPPING) != ContextStartupFlags.MANUAL_MAPPING) {
-            this.Start();
+           // this.Start();
         }
     },
 
