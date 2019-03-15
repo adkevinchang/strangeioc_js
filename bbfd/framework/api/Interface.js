@@ -34,7 +34,7 @@ Interface.prototype.ensureImplements = function(objs){
     }
     for (let j = 0; j < objs.length; j++) {
         const obj = objs[j];
-       // console.log("-======================================="+this.name);
+        //console.log("-======================================="+this.name);
         for (let k = 0; k < this.methods.length; k++) {
             const method = this.methods[k];
             //console.log("-=======================================1:"+method);
