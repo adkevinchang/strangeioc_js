@@ -12,13 +12,17 @@ var Binder = require("Binder");
 var Injector = require("Injector");
 var InjectionBinding = require("InjectionBinding");
 
+/**
+ * 注入绑定者，控制绑定逻辑。
+ */
+
 let InjectionBinder = cc.Class({
     extends: Binder,
 
     properties: {
         suppliers: {
             // ATTRIBUTES:
-            default: Object.create(null),        // The default value will be used only when the component attaching
+            default: null,        // The default value will be used only when the component attaching
             // to a node for the first time
             type: Object, // optional, default is typeof default
             serializable: true,   // optional, default is true
@@ -39,7 +43,8 @@ let InjectionBinder = cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
     ctor() {
-        IImplements.IInjectionBinding("InjectionBinder").ensureImplements([this]);
+        IImplements.IInjectionBinder("InjectionBinder").ensureImplements([this]);
+        this.suppliers = Object.create(null);
         this.injector = new Injector();
         this.injector.binder = this;
         this.injector.reflector = new ReflectionBinder();
@@ -60,36 +65,43 @@ let InjectionBinder = cc.Class({
     GetRawBinding() {
         return new InjectionBinding(null);
     },
+
+    /**
+     * 所有类型的查找和遍历
+     */
     ReflectAll() {
         var list = [];
-        foreach(KeyValuePair < object, Dictionary < object, IBinding >> pair in bindings)
-        {
-            var dict = pair.Value;
-            foreach(KeyValuePair < object, IBinding > bPair in dict)
-            {
+        bindings.forEach(element => {
+            var dict = element.Value;
+            dict.forEach(bPair => {
                 var binding = bPair.Value;
-                var t = (binding.value) ? binding.value : binding.value.GetType();
+                var t = binding.value;
                 if (list.IndexOf(t) == -1) {
-                    list.Add(t);
+                    list.push(t);
                 }
-            }
-        }
+            });
+        });
         return Reflect(list);
     },
+
+    /**
+     * 反射类型到注入者
+     * @param {类型列表} list 
+     */
     Reflect(list) {
         var count = 0;
         list.forEach(element => {
-            if (element.IsPrimitive || element == typeof (Decimal) || element == typeof (string)) {
-                continue;
-            }
+           // if (element.IsPrimitive || element == typeof (Decimal) || element == typeof (string)) {
+           //     continue;
+           // }
             count++;
-            injector.reflector.Get(element);
+            this.injector.reflector.Get(element);
         });
         return count;
     },
+    
     performKeyValueBindings(keyList, valueList) {
         var binding = null;
-
         // Bind in order
         keyList.forEach(element => {
             var keyType = Type.GetType(element);
@@ -182,5 +194,8 @@ let InjectionBinder = cc.Class({
         }
 
         base.resolver(binding);
+    },
+    ToSingleton(){
+
     }
 });

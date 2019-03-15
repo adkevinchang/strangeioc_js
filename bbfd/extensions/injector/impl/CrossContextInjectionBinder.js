@@ -65,7 +65,6 @@ let CrossContextInjectionBinder = cc.Class({
             if (injectionBinding.isCrossContext) {
                 if (this.CrossContextBinder == null) //We are a crosscontextbinder
                 {
-
                     this._super(binding, key);
                 }
                 else {
