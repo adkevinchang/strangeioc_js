@@ -5,6 +5,7 @@
 // window may be undefined when first load engine from editor
 var _global = typeof window === 'undefined' ? global : window;
 /**
+ * require('./bbfd/index');
  * !#en
  * The main namespace of bbfd framework Be based on cocos js engine, all framework core classes, functions, properties and constants are defined in this namespace.
  * !#zh
