@@ -50,4 +50,4 @@ Interface.prototype.ensureImplements = function(objs){
     return true;
 }
 
-module.exports = Interface;
+bbfd.Interface = module.exports = Interface;

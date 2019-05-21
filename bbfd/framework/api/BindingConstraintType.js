@@ -9,11 +9,11 @@
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
 let BindingConstraintType = cc.Enum({
-    ONE:0,
+    ONE:'ONE',
     /// Constrains a SemiBinding to carry a list of items in its Value
-    MANY:1,
+    MANY:'MANY',
     /// Instructs the Binding to apply a Pool instead of a SemiBinding
-    POOL:2
+    POOL:'POOL'
 })
 
 module.exports = BindingConstraintType;

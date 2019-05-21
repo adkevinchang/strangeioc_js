@@ -7,25 +7,29 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var iImplements = require("Implements");
+require('../../../bbfd');
+const iImplements = require("../api/Implements");
+const BindingConstraintType = require('../api/BindingConstraintType');
+const BindingConst = require('../api/BindingConst');
 
 let Binding = cc.Class({
+    name: 'bbfd.Binding',
     extends: cc.Object,
 
     properties: {
         key: {
             get () {
-                return this._key;
+                return this._key.value;
             }
         },
         value: {
             get () {
-                return this._value;
+                return this._value.value;
             }
         },
         name: {
             get () {
-                return this._name;
+                return (this._name.value == null) ? BindingConst.NULLOID : this._name.value;
             }
         },
         isWeak:{
@@ -35,28 +39,29 @@ let Binding = cc.Class({
         },
         keyConstraint: {
             get () {
-                return this._keyConstraint;
+                return this._key.constraint;
             },
             set (vvalue) {
-                this._keyConstraint = vvalue;
+                this._key.constraint = vvalue;
             }
         },
         valueConstraint: {
             get () {
-                return this._valueConstraint;
+                return this._value.constraint;
             },
             set (vvalue) {
-                this._valueConstraint = vvalue;
+                this._value.constraint = vvalue;
             }
         },
         nameConstraint: {
             get () {
-                return this._nameConstraint;
+                return this._name.constraint;
             },
             set (vvalue) {
-                this._nameConstraint = vvalue;
+                this._name.constraint = vvalue;
             }
         },
+        //Delegate
         resolver:{
             get () {
                 return this._resolver;
@@ -68,16 +73,21 @@ let Binding = cc.Class({
     //=======================================================================================
     // 构造函数中初始化实现的接口方法
     //=======================================================================================
-    ctor(resolver){
-        const ibinding = iImplements.IBinding("Binding");
-        ibinding.ensureImplements([this]);
-        this._resolver = resolver;
-        this._key   = new SemiBinding();
-        this._value = new SemiBinding();
-        this._name  = new SemiBinding();
-        keyConstraint = BindingConstraintType.ONE;
-		nameConstraint = BindingConstraintType.ONE;
-        valueConstraint = BindingConstraintType.MANY;
+    ctor(){
+       // cc.assert(arguments.length === 1,'Binding ctor arguments length must 1')
+        iImplements.IBinding("Binding").ensureImplements([this]);
+        this._resolver = null;
+        if(arguments.length === 1)
+        {
+            this._resolver = arguments[0];
+        }
+        this._key   = new bbfd.SemiBinding();
+        this._value = new bbfd.SemiBinding();
+        this._name  = new bbfd.SemiBinding();
+        this._isWeak = false;
+        this.keyConstraint = BindingConstraintType.ONE;
+		this.nameConstraint = BindingConstraintType.ONE;
+        this.valueConstraint = BindingConstraintType.MANY;
         
     },
     // LIFE-CYCLE CALLBACKS:
@@ -85,45 +95,54 @@ let Binding = cc.Class({
     //=======================================================================================
     // -继承接口方法
     //=======================================================================================
-    
+    //绑定的key:Type|bbfd.Binder|'bbfd.Binder' //绑定的key的类型有3三种，一个是接口类型，一个是类的构造函数，还有是类的字符串表示
     Bind(o){
-        _key.Add (o);
+        //bbfd.debug("Binding:Bind:"+o); 
+        this._key.Add (o);
 		return this;
     },
-
+    //注入绑定的值对象
     To(o){
-        _value.Add (o);
-        if (resolver != null)
-            resolver (this);
+        this._value.Add (o);
+       // bbfd.debug("Binding:To:"+o); 
+        if (this.resolver != null)
+           this.resolver.invoke(this);
         return this;
     },
-    
+    //绑定对象的名称定义
     ToName(o){
         var toName = (o == null) ? BindingConst.NULLOID : o;
-        _name.Add(toName);
-        if (resolver != null)
-            resolver(this);
+        this._name.Add(toName);
+        if (this.resolver != null)
+        bbfd.debug("Binding:ToName:"+o); 
+            this.resolver.invoke(this);
         return this;
     },
 
     Named(o){
-        return _name.value == o ? this : null;
+        return this._name.value == o ? this : null;
     },
 
     RemoveKey(o){
-        _key.Remove (o);
+        this._key.Remove(o);
     },
 
     RemoveName(o){
-        _name.Remove (o);
+        this._name.Remove(o);
     },
 
     RemoveValue(o){
-        _value.Remove (o);
+        //bbfd.debug('RemoveValue');
+        this._value.Remove(o);
     },
 
     Weak(){
-        _isWeak = true;
+       this._isWeak = true;
         return this;
+    },
+    ToString(){
+        return 'path:bbfd/framwork/impl/Binding'+' name:'+this.name;
     }
 });
+
+bbfd.Binding = module.exports = Binding;

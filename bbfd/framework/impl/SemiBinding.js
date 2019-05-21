@@ -7,12 +7,13 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var BindingConstraintType = require("BindingConstraintType")
-var iImplements = require("Implements");
-
+require('../../../bbfd');
+const BindingConstraintType = require('../api/BindingConstraintType');
+const iImplements = require('../api/Implements');
 var _value = null;
 
 let SemiBinding = cc.Class({
+    name:'bbfd.SemiBinding',
     extends: cc.Object,
 
     properties: {
@@ -46,11 +47,13 @@ let SemiBinding = cc.Class({
         },
         value: {
             get () {
-                if (this.constraint.Equals(BindingConstraintType.ONE))
+                if (this.constraint === BindingConstraintType.ONE)
 				{
-					return (this.objectValue == null) ? null : this.objectValue [0];
-				}
-				return objectValue;
+                    //bbfd.debug('SemiBinding-value:'+BindingConstraintType.ONE);
+					return (this.objectValue === null) ? null : this.objectValue [0];
+                }
+                //bbfd.debug('SemiBinding-value:'+BindingConstraintType.MANY);
+				return this.objectValue;
             }
         },
     },
@@ -67,32 +70,31 @@ let SemiBinding = cc.Class({
     //=======================================================================================
     // -继承接口方法
     //=======================================================================================
-    Add () {
-        if (this.objectValue == null || constraint == BindingConstraintType.ONE)
+    Add (o) {
+        //bbfd.debug('semiBinding0-Add(o)'+this.objectValue+"//"+this.constraint);
+        if (this.objectValue === null || this.objectValue === undefined || this.constraint === BindingConstraintType.ONE)
         {
-            this.objectValue = Object.create(null);
+            this.objectValue = [];
         }
         else
         {
-            if (uniqueValues)
+            if (this.uniqueValues)
             {
-                var aa = this.objectValue.Length;
+                var aa = this.objectValue.length;
                 for (let a = 0; a < aa; a++)
                 {
                     var val = this.objectValue[a];
-                    if (val.Equals(o))
+                    if (val === o)
                     {
                         return this;
                     }
                 }
             }
-            
-            var tempList = this.objectValue;
-            var len = tempList.Length;
-            this.objectValue = Object.create(null);
-            tempList.CopyTo (this.objectValue, 0); //数组对象的复制
         }
-        this.objectValue [objectValue.Length - 1] = o;
+        this.objectValue [this.objectValue.length] = o;
+       // bbfd.debug('semiBinding1-Add(o)'+typeof this.objectValue);
+        //bbfd.debug('semiBinding1-Add(o)'+this.objectValue.length);
+        //bbfd.debug('semiBinding1-Add(o)'+typeof this.objectValue[0]);
         return this;
     },
     
@@ -103,33 +105,44 @@ let SemiBinding = cc.Class({
         return this;
     },
     Remove (o) {
-        if (o.Equals(objectValue) || objectValue == null)
+        //bbfd.debug('SemiBinding-Remove1');
+        //bbfd.print(this.objectValue);
+       // bbfd.print(o);
+        if (o === this.objectValue || this.objectValue === null)
         {
-            objectValue = null;
+            //bbfd.debug('SemiBinding-Remove2');
+            this.objectValue = null;
             return this;
         }
-        var aa = objectValue.Length;
+        
+        var aa = this.objectValue.length;
+       // bbfd.debug('SemiBinding-Remove3:'+aa);
         for(let a = 0; a < aa; a++)
         {
-            var currVal = objectValue [a];
-            if (o.Equals(currVal))
+            var currVal = this.objectValue[a];
+            //bbfd.print(currVal);
+            //bbfd.debug('================');
+            //bbfd.print(o);
+            if (o === currVal)
             {
-                spliceValueAt (a);
+               // bbfd.debug('SemiBinding-Remove4');
+                this.spliceValueAt(a);
                 return this;
             }
         }
+        //bbfd.debug('SemiBinding-Remove5');
         return this;
     },
     RemoveList(list){
         list.forEach(element => {
-            Remove (element);
+            this.Remove (element);
         });
 		return this;
     },
-    spliceValueAt(){
-        var newList = Object.create(null);
+    spliceValueAt(splicePos){
+        var newList = [];
 	    var  mod = 0;
-		var aa = objectValue.Length;
+		var aa = this.objectValue.length;
 		for(let a = 0; a < aa; a++)
 		{
 			if (a == splicePos)
@@ -137,9 +150,14 @@ let SemiBinding = cc.Class({
 				mod = -1;
 				continue;
 			}
-			newList [a + mod] = objectValue [a];
-		}
-		objectValue = (newList.Length == 0) ? null : newList;
+			newList [a + mod] = this.objectValue [a];
+        }
+        //bbfd.debug('SemiBinding-spliceValueAt'+newList.length);
+		this.objectValue = (newList.length == 0) ? null : newList;
+    },
+    ToString(){
+        return 'path:bbfd/framwork/impl/SemiBinding'+' name:'+this.name;
     }
-    // update (dt) {},
 });
+
+bbfd.SemiBinding = module.exports = SemiBinding;

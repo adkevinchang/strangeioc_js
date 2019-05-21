@@ -1,7 +1,6 @@
 //bbfd framework 
 //author:kevin
 //time:2019/03/24
-
 // window may be undefined when first load engine from editor
 var _global = typeof window === 'undefined' ? global : window;
 /**
@@ -18,12 +17,4 @@ _global.bbfd = _global.bbfd || {};
 // For internal usage
 _global._bbfd = _global._bbfd || {};
 
-require('./predefine');
-/*
-*
-require('../../dispatcher/impl/EventDispatcher');
-require('./Context');
-require('../../injector/impl/CrossContextInjectionBinder');
-require('../impl/CrossContextBridge');
-*/
 module.exports = _global.bbfd;

@@ -7,24 +7,84 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var Inject = cc.Class({
+let Inject = cc.Class({
+    name:'bbfd.Inject',
     extends:cc.Object,
     statics:{
         injectionBinder:null,
+        //binders:[],
         initialize:function(binder){
+            if(Inject.injectionBinder === binder)return;
             Inject.injectionBinder = binder;
         },
-        GetInstance:function(key){
+        //注入的方式有待优化
+        Injecting:function(classnm,classProp,key,name){
+            //多个注入绑定者该如何处理
             if(Inject.injectionBinder !== null)
             {
-                cc.log('injectionBinder:'+Inject.injectionBinder+'key:'+key);
-                return Inject.injectionBinder.GetInstance(key);
+               //bbfd.debug('Inject.injectionBinder=================================key:'+key);
+               //let injectProperty = Inject.getCurrBinder(key,name).GetInstance(key,name);
+               let injectProperty = Inject.injectionBinder.GetInstance(key,name);
+               if(injectProperty===undefined||injectProperty===null)
+               {
+                   let _msg = '';
+                   _msg+'\n\t\ttarget property: '+classProp+
+                    +'\n\t\ttarget: '+ classnm +
+                    +'\n\t\tkey: '+key+
+                    +'\n\t\tname: '+name;
+                    throw new Error(_msg);
+               }
+               return injectProperty;
             }else
             {
-                cc.log('injectionBinder:null'+key);
+                //throw new Error('Inject class no initialize!');
                 return null;
             }
-        }
+        },
+        /*
+        addBinder:function(binder){
+            if(!Inject.hasBinder(binder))
+            {
+                Inject.binders.push(binder);
+            }
+        },
+        hasBinder:function(binder){
+            for (let index = 0; index < this.binders.length; index++) {
+                const element = Inject.binders[index];
+                if(element === binder)
+                {
+                    return true;
+                }
+            }
+            return false;
+        },
+        removeBinder:function(binder)
+        {
+            bbfd.removeToArray(binder,Inject.binders);
+        },
+        //多个绑定者管理
+        getCurrBinder:function(key,name){
+            if(Inject.injectionBinder != null)
+            {
+                let binding = Inject.injectionBinder.GetBinding(key, name);
+                if(binding!=null)
+                {
+                    return Inject.injectionBinder;
+                }
+            }
+            for (let index = 0; index < Inject.binders.length; index++) {
+                const tempBinder = Inject.binders[index];
+                const tempBinding = tempBinder.GetBinding(key, name);
+                if(tempBinding!=null)
+                {
+                    bbfd.debug('Inject.injectionBinder================================='+tempBinder.ToString());
+                    return tempBinder;
+                }
+            }
+            bbfd.debug('Inject.injectionBinder=================================end'+Inject.binders.length);
+            return  Inject.injectionBinder;
+        }*/
     }
 });
-module.exports = Inject;
+
+bbfd.Inject = module.exports = Inject;
