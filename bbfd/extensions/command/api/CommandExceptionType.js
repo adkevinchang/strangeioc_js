@@ -7,19 +7,11 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-require('../../../../bbfd')
-require('../../../framework/api/Interface')
-module.exports = {
-    ICommand:function(nm){
-        return new bbfd.Interface(nm,["Execute","Retain","Release","Fail","Cancel"]);//get set
-    },
-    ICommandBinder:function(nm){
-        return new bbfd.Interface(nm,["ReactTo","ReleaseCommand","Stop"]);//new
-    },
-    IPooledCommandBinder:function(nm){
-        return new bbfd.Interface(nm,["GetPool"]);//get set
-    },
-    ICommandBinding:function(nm){
-        return new bbfd.Interface(nm,["Once","InParallel","InSequence","Pooled"]);//new get set
-    },
+
+let CommandExceptionType = {
+    NULL_BINDING:'null_binding',
+    /// Something went wrong during construction, so the Command resolved to null
+    BAD_CONSTRUCTOR:'bad_constructor'
 }
+
+module.exports = CommandExceptionType;
