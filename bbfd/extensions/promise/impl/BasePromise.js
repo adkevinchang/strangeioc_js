@@ -7,7 +7,7 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var implements = require("PromiseImplements")
+/*var iimplements = require("PromiseImplements")
 
 let BasePromise = cc.Class({
     extends: cc.Component,
@@ -35,7 +35,7 @@ let BasePromise = cc.Class({
     //=======================================================================================
 
     ctor(){
-        implements.IBasePromise("BasePromise").ensureImplements([this]);
+        iimplements.IBasePromise("BasePromise").ensureImplements([this]);
         
     },
 
@@ -70,3 +70,4 @@ let BasePromise = cc.Class({
 
     }
 });
+*/
