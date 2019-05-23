@@ -101,7 +101,8 @@ let Binding = cc.Class({
         this._key.Add (o);
 		return this;
     },
-    //注入绑定的值对象
+    //注入绑定的值对象  类型或者实例
+    // |bbfd.Binder|instance
     To(o){
         this._value.Add (o);
        // bbfd.debug("Binding:To:"+o); 
