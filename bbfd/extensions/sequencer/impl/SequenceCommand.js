@@ -7,7 +7,7 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var Command = require("Command");
+/*var Command = require("Command");
 
 let SequenceCommand = cc.Class({
     extends: Command,
@@ -30,4 +30,4 @@ let SequenceCommand = cc.Class({
         // },
     },
 
-});
+});*/

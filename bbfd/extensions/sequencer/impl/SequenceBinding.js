@@ -7,8 +7,8 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var CommandBinding = require("CommandBinding");
-var implements = require("SequencerImplements");
+/*var CommandBinding = require("CommandBinding");
+var iimplements = require("SequencerImplements");
 
 let SequenceBinding = cc.Class({
     extends: CommandBinding,
@@ -36,7 +36,7 @@ let SequenceBinding = cc.Class({
     //=======================================================================================
 
     ctor(){
-        implements.ISequenceBinding("SequenceBinding").ensureImplements([this]);
+        iimplements.ISequenceBinding("SequenceBinding").ensureImplements([this]);
         
     },
 
@@ -47,4 +47,4 @@ let SequenceBinding = cc.Class({
     Once(){
 
     }
-});
+});*/

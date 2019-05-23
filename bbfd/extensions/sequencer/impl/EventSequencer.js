@@ -8,7 +8,7 @@
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 //var Sequencer = require("Sequencer");
-
+/*
 let EventSequencer = cc.Class({
     extends: cc.Object,
 
@@ -39,4 +39,4 @@ let EventSequencer = cc.Class({
     },
 
     // update (dt) {},
-});
+});*/
