@@ -7,18 +7,21 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var IImplements = require("InjectorImplements");
-var Binder = require("Binder");
-var Injector = require("Injector");
-var InjectionBinding = require("InjectionBinding");
+require('../../../../bbfd')
+require('../../../framework/impl/Binder')
+require('../../../extensions/injector/impl/Injector')
+require('../../../framework/impl/delegate');
+const IImplements = require('../api/InjectorImplements');
+const InjectionBinding = require('../impl/InjectionBinding');
+const InjectionExceptionType = require('../api/InjectionExceptionType');
 
 /**
  * 注入绑定者，控制绑定逻辑。
  */
 
 let InjectionBinder = cc.Class({
-    extends: Binder,
-
+    name:'bbfd.InjectionBinder',
+    extends: bbfd.Binder,
     properties: {
         suppliers: {
             // ATTRIBUTES:
@@ -45,25 +48,27 @@ let InjectionBinder = cc.Class({
     ctor() {
         IImplements.IInjectionBinder("InjectionBinder").ensureImplements([this]);
         this.suppliers = Object.create(null);
-        this.injector = new Injector();
+        this.injector = new bbfd.Injector();
         this.injector.binder = this;
-        this.injector.reflector = new ReflectionBinder();
+        //this.injector.reflector = new ReflectionBinder();
     },
+    
     GetInstance(key, name) {
-        var binding = GetBinding(key, name);
+        var binding = this.GetBinding(key, name);
         if (binding === null) {
-            cc.warn("InjectionBinder has no binding for:\n\tkey: " + key + "\nname: " + name, InjectionExceptionType.NULL_BINDING);
+            throw new Error("InjectionBinder has no binding for:\n\tkey: " + key + "\nname: " + name, InjectionExceptionType.NULL_BINDING);
         }
-        var instance = GetInjectorForBinding(binding).Instantiate(binding, false);
-        this.injector.TryInject(binding, instance);
-
+        //bbfd.debug("InjectionBinder:GetInstance0:"+binding.ToString());
+        var instance = this.GetInjectorForBinding(binding).Instantiate(binding,false);
+        //bbfd.debug("InjectionBinder:GetInstance1:"+instance.ToString());
+        this.injector.TryInject(binding,instance);
         return instance;
     },
     GetInjectorForBinding(binding) {
         return this.injector;
     },
     GetRawBinding() {
-        return new InjectionBinding(null);
+        return new bbfd.InjectionBinding(bbfd.createDelegate(this, this.resolver));
     },
 
     /**
@@ -91,15 +96,15 @@ let InjectionBinder = cc.Class({
     Reflect(list) {
         var count = 0;
         list.forEach(element => {
-           // if (element.IsPrimitive || element == typeof (Decimal) || element == typeof (string)) {
-           //     continue;
-           // }
+            // if (element.IsPrimitive || element == typeof (Decimal) || element == typeof (string)) {
+            //     continue;
+            // }
             count++;
             this.injector.reflector.Get(element);
         });
         return count;
     },
-    
+
     performKeyValueBindings(keyList, valueList) {
         var binding = null;
         // Bind in order
@@ -155,7 +160,8 @@ let InjectionBinder = cc.Class({
         }
 
         return binding;
-    }, GetSupplier(injectionType, targetType) {
+    }, 
+    GetSupplier(injectionType, targetType) {
         if (suppliers.ContainsKey(targetType)) {
             if (suppliers[targetType].ContainsKey(injectionType)) {
                 return suppliers[targetType][injectionType];
@@ -171,12 +177,12 @@ let InjectionBinder = cc.Class({
         }
     },
     resolver(binding) {
-        //Debug.Log("resolver:0");
+        bbfd.debug('InjectionBinder:resolver0' + binding);
         var iBinding = binding;
         var supply = iBinding.GetSupply();
 
         if (supply != null) {
-            //Debug.Log("resolver:1");
+            bbfd.debug('InjectionBinder:resolver1');
             supply.forEach(element => {
                 var aType = a;
                 if (suppliers.ContainsKey(aType) == false) {
@@ -186,16 +192,21 @@ let InjectionBinder = cc.Class({
                 keys.forEach(element => {
                     var keyType = key;
                     if (suppliers[aType].ContainsKey(keyType) == false) {
-                        //Debug.Log("test:" + aType + "//" + keyType);
+                        bbfd.debug("InjectionBinder-test:" + aType + "//" + keyType);
                         suppliers[aType][keyType] = iBinding;
                     }
                 });
             });
         }
 
-        base.resolver(binding);
+        this._super(binding);
     },
-    ToSingleton(){
-
+     /**
+     *输出类路径与名字
+     */
+    ToString() {
+        return 'path:bbfd/extensions/injector/impl/InjectionBinder' + ' name:' + this.name;
     }
 });
+
+bbfd.InjectionBinder = module.exports = InjectionBinder;

@@ -7,9 +7,13 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var iimplements = require("InjectorImplements");
+require('../../../../bbfd')
+require('../../injector/impl/InjectorFactory');
+const iimplements = require('../api/InjectorImplements');
+const InjectionExceptionType = require('../api/InjectionExceptionType');
+const InjectionBindingType = require('../api/InjectionBindingType');
 
-let Injector = cc.Class({
+var Injector = cc.Class({
     extends: cc.Object,
 
     properties: {
@@ -49,81 +53,53 @@ let Injector = cc.Class({
         },
     },
 
-    // LIFE-CYCLE CALLBACKS:
-
-    // onLoad () {},
-
-    start() {
-
+    ctor(){
+        this.factory = new bbfd.InjectorFactory();
     },
+    //实例化存储的值
+    //binding.value 如果是空
+    //binding.value 如果是字符串类名
+    //binding.value 如果是类的构造函数
+    //binding.value 如果是单个实例
     Instantiate(binding, tryInjectHere) {
-        failIf(binder == null, "Attempt to instantiate from Injector without a Binder", InjectionExceptionType.NO_BINDER);
-        failIf(factory == null, "Attempt to inject into Injector without a Factory", InjectionExceptionType.NO_FACTORY);
-
-        armorAgainstInfiniteLoops(binding);
-
-        retv = null;
-        reflectionType = null;
-
-        if (binding.value)// is Type
+        this.failIf(this.binder === undefined, "Attempt to instantiate from Injector without a Binder", InjectionExceptionType.NO_BINDER);
+        this.failIf(this.factory === undefined, "Attempt to inject into Injector without a Factory", InjectionExceptionType.NO_FACTORY);
+        var instand = this.factory.Get(binding);
+        if(instand != null)//尝试注入实例
         {
-            reflectionType = binding.value;// as Type
+            if (tryInjectHere)
+			{
+                  //有待逻辑优化和实现
+				this.TryInject(binding, instand);
+			}
         }
-        else if (binding.value == null) {
-            tl = binding.key;
-            reflectionType = tl;
-            if (reflectionType.IsPrimitive || reflectionType == typeof (Decimal) || reflectionType == typeof (string)) {
-                retv = binding.value;
-            }
-        }
-        else {
-            retv = binding.value;
-        }
-
-        if (retv == null) //If we don't have an existing value, go ahead and create one.
-        {
-
-            reflection = reflector.Get(reflectionType);
-
-            parameterTypes = reflection.constructorParameters;
-            parameterNames = reflection.ConstructorParameterNames;
-
-            aa = parameterTypes.Length;
-            args = Object.create(null);
-            for (let a = 0; a < aa; a++) {
-                args[a] = getValueInjection(parameterTypes[a], parameterNames[a], reflectionType, null);
-            }
-            retv = factory.Get(binding, args);
-
-            if (tryInjectHere) {
-                TryInject(binding, retv);
-            }
-        }
-        infinityLock = null; //Clear our infinity lock so the next time we instantiate we don't consider this a circular dependency
-
-        return retv;
+        return instand;
     },
+
+    //尝试注入功能待完善
     TryInject(binding, target) {
         //If the InjectorFactory returns null, just return it. Otherwise inject the retv if it needs it
         //This could happen if Activator.CreateInstance returns null
         if (target != null) {
-            if (binding.toInject) {
-                target = Inject(target, false);
+            if (binding.toInject) {//注入实例对象的属性注入对象和实例化
+                target = this.Inject(target, false);
             }
-
-            if (binding.type == InjectionBindingType.SINGLETON || binding.type == InjectionBindingType.VALUE) {
+            if (binding.type === InjectionBindingType.SINGLETON || binding.type === InjectionBindingType.VALUE) {
                 //prevent double-injection
-                binding.ToInject(false);
+                binding.ToInject(false);//说明注入过，并且，值肯定是一个实例对象。
             }
         }
         return target;
     },
+    //有待逻辑优化和实现
+    //根据实例对象，注入它的属性设置注入对象
     Inject(target, attemptConstructorInjection) {
-        failIf(binder == null, "Attempt to inject into Injector without a Binder", InjectionExceptionType.NO_BINDER);
-        failIf(reflector == null, "Attempt to inject without a reflector", InjectionExceptionType.NO_REFLECTOR);
-        failIf(target == null, "Attempt to inject into null instance", InjectionExceptionType.NULL_TARGET);
+        this.failIf(this.binder === null, "Attempt to inject into Injector without a Binder", InjectionExceptionType.NO_BINDER);
+        this.failIf(this.reflector === null, "Attempt to inject without a reflector", InjectionExceptionType.NO_REFLECTOR);
+        this.failIf(this.target === null, "Attempt to inject into null instance", InjectionExceptionType.NULL_TARGET);
 
         //Some things can't be injected into. Bail out.
+        /*
         t = target.GetType();
         if (t.IsPrimitive || t == typeof (Decimal) || t == typeof (string)) {
             return target;
@@ -135,13 +111,15 @@ let Injector = cc.Class({
             target = performConstructorInjection(target, reflection);
         }
         performSetterInjection(target, reflection);
-        postInject(target, reflection);
+        postInject(target, reflection);*/
+
         return target;
     },
+    //释放该对象所有注入
     Uninject(target) {
-        failIf(binder == null, "Attempt to inject into Injector without a Binder", InjectionExceptionType.NO_BINDER);
-        failIf(reflector == null, "Attempt to inject without a reflector", InjectionExceptionType.NO_REFLECTOR);
-        failIf(target == null, "Attempt to inject into null instance", InjectionExceptionType.NULL_TARGET);
+        failIf(this.binder == null, "Attempt to inject into Injector without a Binder", InjectionExceptionType.NO_BINDER);
+        failIf(this.reflector == null, "Attempt to inject without a reflector", InjectionExceptionType.NO_REFLECTOR);
+        failIf(this.target == null, "Attempt to inject into null instance", InjectionExceptionType.NULL_TARGET);
 
         t = target.GetType();
         if (t.IsPrimitive || t == typeof (Decimal) || t == typeof (string)) {
@@ -267,7 +245,10 @@ let Injector = cc.Class({
         if (infinityLock[binding] > INFINITY_LIMIT) {
             cc.warn("There appears to be a circular dependency. Terminating loop.", InjectionExceptionType.CIRCULAR_DEPENDENCY);
         }
+    },
+    ToString(){
+        return 'path:bbfd/extensions/injector/impl/Injector'+' name:'+this.name;
     }
-
-    // update (dt) {},
 });
+
+bbfd.Injector = module.exports = Injector;

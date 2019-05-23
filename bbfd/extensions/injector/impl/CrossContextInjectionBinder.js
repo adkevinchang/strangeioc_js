@@ -9,15 +9,16 @@
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 // author:kevin
 // time:20190314
-
-var InjectionBinder = require("InjectionBinder");
-var IImplements = require("InjectorImplements");
+require('../../../../bbfd')
+require('../../injector/impl/InjectionBinder');
+const IImplements = require('../api/InjectorImplements');
 
 /**
  * 交叉上下文的注入绑定者
  */
 let CrossContextInjectionBinder = cc.Class({
-    extends: InjectionBinder,
+    name:'bbfd.CrossContextInjectionBinder',
+    extends: bbfd.InjectionBinder,
 
     properties: {
         // foo: {
@@ -29,10 +30,12 @@ let CrossContextInjectionBinder = cc.Class({
         // },
         CrossContextBinder: {
             get() {
+                //bbfd.debug('CrossContextInjectionBinder-get CrossContextBinder'+this._CrossContextBinder);
                 return this._CrossContextBinder;
             },
             set(value) {
                 this._CrossContextBinder = value;
+                //bbfd.debug('CrossContextInjectionBinder-set CrossContextBinder'+this._CrossContextBinder);
             }
         },
     },
@@ -44,13 +47,17 @@ let CrossContextInjectionBinder = cc.Class({
      * @param {绑定器的名字} name 
      */
     GetBinding(key, name) {
-        var binding = this._super();
-        if (binding == null) //Attempt to get this from the cross context. Cross context is always SECOND PRIORITY. Local injections always override
+        bbfd.debug('CrossContextInjectionBinder:GetBinding');
+        var binding = this._super(key, name);
+        if (binding === null) //Attempt to get this from the cross context. Cross context is always SECOND PRIORITY. Local injections always override
         {
-            if (this.CrossContextBinder !== null) {
+            bbfd.debug('CrossContextInjectionBinder:GetBinding2'+this.CrossContextBinder);
+            if (this.CrossContextBinder != undefined) {
+                bbfd.debug('CrossContextInjectionBinder:GetBinding3'+this.CrossContextBinder);
                 binding = this.CrossContextBinder.GetBinding(key, name);
             }
         }
+        bbfd.debug('CrossContextInjectionBinder:GetBinding-end');
         return binding;
     },
     /**
@@ -60,42 +67,55 @@ let CrossContextInjectionBinder = cc.Class({
      */
     ResolveBinding(binding, key) {
         //Decide whether to resolve locally or not
+       // bbfd.debug('CrossContextInjectionBinder:ResolveBinding');
         if (IImplements.IInjectionBinding("CrossContextInjectionBinder").ensureImplements([binding])) {
             var injectionBinding = binding;
             if (injectionBinding.isCrossContext) {
-                if (this.CrossContextBinder == null) //We are a crosscontextbinder
+                //bbfd.debug('CrossContextInjectionBinder:ResolveBinding2:'+this.CrossContextBinder);
+                if (this.CrossContextBinder === undefined) //We are a crosscontextbinder
                 {
+                   // bbfd.debug('CrossContextInjectionBinder:ResolveBinding3:'+this.CrossContextBinder);
                     this._super(binding, key);
                 }
                 else {
-                    this.Unbind(key, binding.name); //remove this cross context binding from ONLY the local binder
+                //bbfd.debug('CrossContextInjectionBinder:ResolveBinding4:'+this.CrossContextBinder);
+                   //bbfd.debug('binding.name:'+binding.name);
+                   // this.Unbind(key, binding.name); //remove this cross context binding from ONLY the local binder
                     this.CrossContextBinder.ResolveBinding(binding, key);
                 }
             }
             else {
+               // bbfd.debug('CrossContextInjectionBinder:ResolveBinding5:'+this.CrossContextBinder);
                 this._super(binding, key);
             }
         }
     },
 
     GetInjectorForBinding(binding) {
-        if (binding.isCrossContext && this.CrossContextBinder != null) {
+       // bbfd.debug(binding);
+       // bbfd.debug(this.CrossContextBinder);
+        if (binding && binding.isCrossContext && this.CrossContextBinder !== undefined) {
             return this.CrossContextBinder.injector;
         }
         else {
             return this.injector;
         }
     },
-    
+
     Unbind(key, name) {
         var binding = this.GetBinding(key, name);
-
+        bbfd.debug('CrossContextInjectionBinder:Unbind'+binding+"//"+key);
         if (binding !== null &&
             binding.isCrossContext &&
-            this.CrossContextBinder !== null) {
+            this.CrossContextBinder !== undefined) {
             this.CrossContextBinder.Unbind(key, name);
         }
         this._super(key, name);
+    },
+    ToString() {
+        return 'path:bbfd/extensions/injector/impl/CrossContextInjectionBinder' + ' name:' + this.name;
     }
 
 });
+
+bbfd.CrossContextInjectionBinder = module.exports = CrossContextInjectionBinder;

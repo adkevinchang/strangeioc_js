@@ -7,20 +7,20 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-
-var Interface = require("Interface")
+require('../../../../bbfd')
+require('../../../framework/api/Interface')
 
 module.exports = {
     IInjector: function (nm) {
-        return new Interface(nm, ["Instantiate", "TryInject", "Inject", "Uninject"]);
+        return new bbfd.Interface(nm, ["Instantiate", "TryInject", "Inject", "Uninject"]);
     },
     IInjectorFactory: function (nm) {
-        return new Interface(nm, ["Get"]);
+        return new bbfd.Interface(nm, ["Get"]);
     },
     IInjectionBinding: function (nm) {
-        return new Interface(nm, ["ToSingleton", "ToValue", "SetValue", "CrossContext", "GetSupply", "SupplyTo", "Unsupply", "ToInject", "Bind", "To", "ToName", "Named"]);
+        return new bbfd.Interface(nm, ["ToSingleton", "ToValue", "SetValue", "CrossContext", "GetSupply", "SupplyTo", "Unsupply", "ToInject", "Bind", "To", "ToName", "Named"]);
     },
     IInjectionBinder: function (nm) {
-        return new Interface(nm, ["GetInstance", "GetSupplier", "Reflect", "ReflectAll", "ResolveBinding", "Unsupply", "Bind", "GetBinding", "Unbind", "WhitelistBindings", "ConsumeBindings"]);
+        return new bbfd.Interface(nm, ["GetInstance", "GetSupplier", "Reflect", "ReflectAll", "ResolveBinding", "Unsupply", "Bind", "GetBinding", "Unbind", "WhitelistBindings", "ConsumeBindings"]);
     },
 }
