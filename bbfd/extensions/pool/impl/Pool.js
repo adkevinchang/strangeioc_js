@@ -7,6 +7,7 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
+/*
 var implement = require("PoolImplements")
 
 let Pool = cc.Class({
@@ -45,4 +46,4 @@ let Pool = cc.Class({
     //=======================================================================================
 
     // update (dt) {},
-});
+});*/

@@ -7,15 +7,14 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-
-var Interface = require("Interface")
+require('../../../../bbfd')
+require('../../../framework/api/Interface')
 
 module.exports = {
     IPoolable:function(nm){
-        return new Interface(nm,["Restore","Retain","Release"]);//get set
+        return new bbfd.Interface(nm,["Reuse","Unuse"]);
     },
-    IPool:function(nm){
-        return new Interface(nm,["GetInstance","ReturnInstance","Clean"]);//get set
-    }
-    
+    //IPool:function(nm){
+       // return new Interface(nm,["GetInstance","ReturnInstance","Clean"]);//get set
+   // }
 }
