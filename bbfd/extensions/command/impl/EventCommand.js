@@ -10,37 +10,33 @@
 require('../../../../bbfd');
 require('../impl/Command');
 
+const dispatcherImp = require('../../dispatcher/api/DispatcherImplements');
+const ContextKeys = require('../../context/api/ContextKeys');
+
 let EventCommand = cc.Class({
     name:'bbfd.EventCommand',
     extends: bbfd.Command,
 
     properties: {
-        // foo: {
-        //     // ATTRIBUTES:
-        //     default: null,        // The default value will be used only when the component attaching
-        //                           // to a node for the first time
-        //     type: cc.SpriteFrame, // optional, default is typeof default
-        //     serializable: true,   // optional, default is true
-        // },
-        // bar: {
-        //     get () {
-        //         return this._bar;
-        //     },
-        //     set (value) {
-        //         this._bar = value;
-        //     }
-        // },
+        dispatcher: {
+            get() {
+                //注入者初始化注入绑定者
+                return this._dispatcher?this._dispatcher:this._dispatcher = bbfd.Inject.Injecting('bbfd.EventMediator','dispatcher',dispatcherImp.IEventDispatcher,ContextKeys.CONTEXT_DISPATCHER);
+            },
+            set(value) {
+                this._dispatcher = value;
+            }
+        },
+        evt: {
+            get() {
+                //注入者初始化注入绑定者
+                return this._evt?this._evt:this._evt = bbfd.Inject.Injecting('bbfd.EventCommand','evt',dispatcherImp.IEvent);
+            },
+            set(value) {
+                this._dispatcher = value;
+            }
+        },
     },
-
-    // LIFE-CYCLE CALLBACKS:
-
-    // onLoad () {},
-
-    start () {
-
-    },
-
-    // update (dt) {},
 });
 
 bbfd.EventCommand = module.exports = EventCommand;

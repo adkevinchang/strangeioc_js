@@ -8,6 +8,7 @@
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 require('../../../../bbfd');
+require('../../../framework/api/Inject');
 const iimplements = require("../api/CommandImplements");
 const InjectorImplements = require('../../injector/api/InjectorImplements');
 const poolImpl = require('../../pool/api/PoolImplements');
@@ -27,8 +28,7 @@ let Command = cc.Class({
         // },
         commandBinder: {
             get () {
-                //this._commandBinder = Inject.GetInstance(iimplements.ICommandBinder);
-                return this._commandBinder;
+                return this._commandBinder?this._commandBinder:this._commandBinder = bbfd.Inject.Injecting('Command','commandBinder',iimplements.ICommandBinder);
             },
             set (value) {
                 this._commandBinder = value;
@@ -36,8 +36,7 @@ let Command = cc.Class({
         },
         injectionBinder: {
             get () {
-               // this._injectionBinder = Inject.GetInstance(InjectorImplements.IInjectionBinder);
-                return this._injectionBinder;
+                return this._injectionBinder?this._injectionBinder:this,_injectionBinder = bbfd.Inject.Injecting('Command','injectionBinder',InjectorImplements.IInjectionBinder);
             },
             set (value) {
                 this._injectionBinder = value;

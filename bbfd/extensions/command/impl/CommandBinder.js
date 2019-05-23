@@ -45,8 +45,7 @@ let CommandBinder = cc.Class({
         },
         injectionBinder: {
             get() {
-                this._injectionBinder =(this._injectionBinder === undefined)?bbfd.Inject.Injecting('bbfd.CommandBinder','injectionBinder',InjectorImplements.IInjectionBinder):this._injectionBinder;
-                return this._injectionBinder;
+                return this._injectionBinder ? this._injectionBinder : this._injectionBinder = bbfd.Inject.Injecting('bbfd.CommandBinder','injectionBinder',InjectorImplements.IInjectionBinder);
             },
             set(value) {
                 this._injectionBinder = value;
@@ -139,7 +138,7 @@ let CommandBinder = cc.Class({
                 msg += "tied to data " + data.ToString();
             }
             msg += " could not be instantiated.\nThis might be caused by a null pointer during instantiation or failing to override Execute (generally you shouldn't have constructor code in Commands).";
-            cc.warn(msg, CommandExceptionType.BAD_CONSTRUCTOR);
+            throw new Error(msg, CommandExceptionType.BAD_CONSTRUCTOR);
         }
         command.data = data;
         return command;
