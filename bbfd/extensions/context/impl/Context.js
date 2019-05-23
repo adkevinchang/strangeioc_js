@@ -7,12 +7,14 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var iImplements = require("ContextImplements");
-var Binder = require("Binder");
-var ContextStartupFlags = require("ContextStartupFlags");
+require('../../../../bbfd');
+require('../../../framework/impl/Binder');
+const iImplements = require('./../api/ContextImplements');
+const ContextStartupFlags = require("ContextStartupFlags");
 
 let Context = cc.Class({
-    extends: Binder,
+    name:"bbfd.Context",
+    extends: bbfd.Binder,
     statics: {
         firstContext: null
     },
@@ -56,18 +58,18 @@ let Context = cc.Class({
         }
 
         iImplements.IContext("Context").ensureImplements([this]);
-        if (Context.firstContext == null || Context.firstContext.GetContextView() == null) {
+        if (Context.firstContext === null || Context.firstContext.GetContextView() === null) {
             Context.firstContext = this;
         }
         else {
             Context.firstContext.AddContext(this);
         }
-
         this.SetContextView(view);
         this.addCoreComponents();
+        //bbfd.debug('Context:ctor===========================');
         this.autoStartup = (flags & ContextStartupFlags.MANUAL_LAUNCH) != ContextStartupFlags.MANUAL_LAUNCH;
         if ((flags & ContextStartupFlags.MANUAL_MAPPING) != ContextStartupFlags.MANUAL_MAPPING) {
-           // this.Start();
+            this.Start();
         }
     },
 
@@ -77,13 +79,13 @@ let Context = cc.Class({
     //整个功能模块启动
     Start() {
         //实例化核心的所有组件 如：命令绑定组件，中介绑定组件等
-        instantiateCoreComponents();
+        this.instantiateCoreComponents();
         //全面的绑定机器操作
-        mapBindings();
+        this.mapBindings();
         //远程绑定机器操作
-        postBindings();
-        if (autoStartup)
-            Launch();
+        this.postBindings();
+        if (this.autoStartup)
+            this.Launch();
         return this;
     },
     postBindings() {
@@ -132,7 +134,12 @@ let Context = cc.Class({
         this.contextView = view;
         return this;
     },
-    GetComponent(name) {
+    GetComponent(key,name) {
         return null
+    },
+    ToString(){
+        return 'path:bbfd/extensions/context/impl/Context'+' name:'+this.name;
     }
 });
+
+bbfd.Context = module.exports = Context;

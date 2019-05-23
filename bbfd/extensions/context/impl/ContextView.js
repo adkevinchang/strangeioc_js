@@ -7,10 +7,11 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
+require('../../../../bbfd');
 
 let ContextView = cc.Class({
+    name:'bbfd.ContextView',
     extends: cc.Component,
-
     properties: {
         // foo: {
         //     // ATTRIBUTES:
@@ -25,7 +26,8 @@ let ContextView = cc.Class({
             },
             set (value) {
                 this._requiresContext = value;
-            }
+            },
+            visible:false
         },
         registeredWithContext: {
             get () {
@@ -33,17 +35,20 @@ let ContextView = cc.Class({
             },
             set (value) {
                 this._registeredWithContext = value;
-            }
+            },
+            visible:false
         },
         autoRegisterWithContext: {
             get () {
                 return this._autoRegisterWithContext;
-            }
+            },
+            visible:false
         },
         shouldRegister: {
             get () {
-                return this._shouldRegister;
-            }
+                return true;
+            },
+            visible:false
         },
         context: {
             get () {
@@ -51,7 +56,8 @@ let ContextView = cc.Class({
             },
             set (value) {
                 this._context = value;
-            }
+            },
+            visible:false
         },
     },
 
@@ -63,9 +69,11 @@ let ContextView = cc.Class({
 
     },
 
+    //销毁处理
     onDestroy(){
-        //
         
     }
     // update (dt) {},
 });
+
+bbfd.ContextView = module.exports = ContextView;

@@ -7,17 +7,16 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-
-var Interface = require("Interface")
-
+require('../../../../bbfd')
+require('../../../framework/api/Interface')
 module.exports = {
     IContext:function(nm){
-        return new Interface(nm,["start","Launch","AddContext","RemoveContext","AddView","RemoveView","EnableView","DisableView","GetContextView"]);
+        return new bbfd.Interface(nm,["start","Launch","AddContext","RemoveContext","AddView","RemoveView","EnableView","DisableView","GetContextView"]);
     },
     ICrossContextCapable:function(nm){
-        return new Interface(nm,["AssignCrossContext","RemoveCrossContext","GetComponent"]);//get set
+        return new bbfd.Interface(nm,["AssignCrossContext","RemoveCrossContext","GetComponent"]);//get set
     },
     ITriggerable:function(nm){
-        return new Interface(nm,["Trigger"]);
+        return new bbfd.Interface(nm,["Trigger"]);
     }
 }

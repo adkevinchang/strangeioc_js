@@ -7,18 +7,19 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var iImplements = require("ContextImplements");
-var DispatcherImplements = require("DispatcherImplements");
-var EventDispatcher = require("EventDispatcher");
-var Context = require("Context");
-var ContextKeys = require("ContextKeys");
-var CrossContextInjectionBinder = require("CrossContextInjectionBinder");
-var CrossContextBridge = require("CrossContextBridge");
-var InjectionBinder = require("InjectionBinder");
-var Inject = require("Inject");
+require('../../../../bbfd')
+require('../../dispatcher/impl/EventDispatcher');
+require('./Context');
+require('../../injector/impl/CrossContextInjectionBinder');
+require('../impl/CrossContextBridge');
+require('../../../framework/api/Inject');
+const iImplements = require('../api/ContextImplements');
+const DispatcherImplements = require('../../dispatcher/api/DispatcherImplements');
+const ContextKeys = require('../api/ContextKeys');
 
 let CrossContext = cc.Class({
-    extends: Context,
+    name:'bbfd.CrossContext',
+    extends: bbfd.Context,
 
     properties: {
         // foo: {
@@ -30,13 +31,17 @@ let CrossContext = cc.Class({
         // },
         injectionBinder: {
             get() {
-                this._injectionBinder = this._injectionBinder ? this._injectionBinder : this._injectionBinder = new CrossContextInjectionBinder();
-                //注入者初始化注入绑定者
-                Inject.initialize(this._injectionBinder);
+                if(this._injectionBinder === undefined)
+                {
+                    this._injectionBinder = new bbfd.CrossContextInjectionBinder();
+                    //注入者初始化注入绑定者
+                     bbfd.Inject.initialize(this._injectionBinder);
+                }
                 return this._injectionBinder;
             },
             set(value) {
                 this._injectionBinder = value;
+                bbfd.Inject.initialize(this._injectionBinder);
             }
         },
         crossContextDispatcher: {
@@ -49,7 +54,7 @@ let CrossContext = cc.Class({
         },
         crossContextBridge: {
             get() {
-                return this._crossContextBridge ? this._crossContextBridge : this._crossContextBridge = this.injectionBinder.GetInstance("");
+                return this._crossContextBridge?this._crossContextBridge:this._crossContextBridge = this.injectionBinder.GetInstance(bbfd.CrossContextBridge);
             },
             set(value) {
                 this._crossContextBridge = value;
@@ -74,9 +79,13 @@ let CrossContext = cc.Class({
      */
     addCoreComponents() {
         this._super();
-        if (this.injectionBinder.CrossContextBinder === null) {
-            this.injectionBinder.CrossContextBinder = new CrossContextInjectionBinder();
+        if (this.injectionBinder.CrossContextBinder === undefined) {
+            cc.log("CrossContext-addCoreComponents:");
+            this.injectionBinder.CrossContextBinder = new bbfd.CrossContextInjectionBinder();
+            //this.injectionBinder.CrossContextBinder.name = 'CrossContextBinder';
+            //this.injectionBinder.CrossContextBinder.ToString();
         }
+
         /*
         var maps = Object.create(null);
         maps[DispatcherImplements.ITriggerable] = 100;
@@ -87,28 +96,33 @@ let CrossContext = cc.Class({
         }
         
         Inject.GetInstance(DispatcherImplements.ITriggerable);*/
-        if (Context.firstContext == this) {
-            cc.log("kevin:");
-            cc.log(cc.js.isChildClassOf(CrossContextInjectionBinder,InjectionBinder));
-            //this.injectionBinder.Bind(DispatcherImplements.IEventDispatcher).To(EventDispatcher).ToSingleton().ToName(ContextKeys.CROSS_CONTEXT_DISPATCHER).CrossContext();
-            //this.injectionBinder.Bind(CrossContextBridge).ToSingleton().CrossContext();
+        if (bbfd.Context.firstContext === this) {
+            //cc.log("CrossContext-addCoreComponents:");
+            //cc.log(cc.js.isChildClassOf(CrossContextInjectionBinder,InjectionBinder));
+            this.injectionBinder.Bind(DispatcherImplements.IEventDispatcher).To(bbfd.EventDispatcher).ToSingleton().ToName(ContextKeys.CROSS_CONTEXT_DISPATCHER).CrossContext();
+            //bbfd.debug('addCoreComponents============================');
+            this.injectionBinder.Bind(bbfd.CrossContextBridge).ToSingleton().CrossContext();
         }
     },
     /**
      * 实例化核心组件
+     * 如果找到上下文派发者，将添加触发能力。否则不处理
      * 实例化派发器好实例化交叉上下文派发器，并添加派发能力
      */
     instantiateCoreComponents() {
         this._super();
-        var dispatcherBinding = this.injectionBinder.GetBinding(ContextKeys.CONTEXT_DISPATCHER);
+        var dispatcherBinding = this.injectionBinder.GetBinding(DispatcherImplements.IEventDispatcher,ContextKeys.CONTEXT_DISPATCHER);
 
+       // bbfd.debug('CrossContext:instantiateCoreComponents1:'+dispatcherBinding);
+        
         if (dispatcherBinding != null) {
-            var dispatcher = this.injectionBinder.GetInstance(ContextKeys.CONTEXT_DISPATCHER);
+            var dispatcher = this.injectionBinder.GetInstance(DispatcherImplements.IEventDispatcher,ContextKeys.CONTEXT_DISPATCHER);
 
             if (dispatcher != null) {
-                this.crossContextDispatcher = this.injectionBinder.GetInstance(ContextKeys.CROSS_CONTEXT_DISPATCHER);
+                this.crossContextDispatcher = this.injectionBinder.GetInstance(DispatcherImplements.IEventDispatcher,ContextKeys.CROSS_CONTEXT_DISPATCHER);
+                //bbfd.debug('CrossContext:instantiateCoreComponents2:'+this.crossContextDispatcher);
                 this.crossContextDispatcher.AddTriggerable(dispatcher);
-                dispatcher.AddTriggerable(crossContextBridge);
+                //dispatcher.AddTriggerable(this.crossContextBridge);
             }
         }
     },
@@ -122,7 +136,7 @@ let CrossContext = cc.Class({
         this._super();
         if(iImplements.ICrossContextCapable("CrossContext").ensureImplements([context]))
         {
-            AssignCrossContext(context);
+            this.AssignCrossContext(context);
         }
         return this;
     },
@@ -131,8 +145,8 @@ let CrossContext = cc.Class({
      * @param {CrossContext} childContext 
      */
     AssignCrossContext(childContext) {
-        childContext.crossContextDispatcher = this.crossContextDispatcher;
-        childContext.injectionBinder.CrossContextBinder = this.injectionBinder.CrossContextBinder;
+        //childContext.crossContextDispatcher = this.crossContextDispatcher;
+        //childContext.injectionBinder.CrossContextBinder = this.injectionBinder.CrossContextBinder;
     },
     /**
      * 清空交叉上下文的派发者能力
@@ -140,8 +154,8 @@ let CrossContext = cc.Class({
      */
     RemoveCrossContext(childContext) {
         if (childContext.crossContextDispatcher != null) {
-            childContext.crossContextDispatcher.RemoveTriggerable(childContext.GetComponent(ContextKeys.CONTEXT_DISPATCHER));
-            childContext.crossContextDispatcher = null;
+            //childContext.crossContextDispatcher.RemoveTriggerable(childContext.GetComponent(ContextKeys.CONTEXT_DISPATCHER));
+            //childContext.crossContextDispatcher = null;
         }
     },
     /**
@@ -151,8 +165,13 @@ let CrossContext = cc.Class({
     RemoveContext(context) {
         if(iImplements.ICrossContextCapable("CrossContext").ensureImplements([context]))
         {
-            RemoveCrossContext(context);
+           // RemoveCrossContext(context);
         }
-        this._super();
+        //this._super();
+    },
+    ToString(){
+        return 'path:bbfd/extensions/context/impl/CrossContext'+' name:'+this.name;
     }
 });
+
+bbfd.CrossContext = module.exports = CrossContext;

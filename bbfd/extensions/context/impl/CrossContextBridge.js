@@ -7,12 +7,23 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var iImplements = require("Implements");
-var Binder = require("Binder");
+require('../../../../bbfd');
+require('../../../framework/api/Inject');
+const ContextKeys = require('../../context/api/ContextKeys');
+const iImplements = require('../../dispatcher/api/DispatcherImplements');
 
 let CrossContextBridge = cc.Class({
-    extends: Binder,
-
+    name: 'bbfd.CrossContextBridge',
+    extends: bbfd.Binder,
+    statics:{
+        getBounds: function (spriteList) {
+            //bbfd.debug("getBounds");
+            for (const key in this.__ctors__) {
+                //bbfd.debug("getBounds0:"+key);
+            }
+            return this.__ctors__;
+        }
+    },
     properties: {
         // foo: {
         //     // ATTRIBUTES:
@@ -21,14 +32,15 @@ let CrossContextBridge = cc.Class({
         //     type: cc.SpriteFrame, // optional, default is typeof default
         //     serializable: true,   // optional, default is true
         // },
-        // bar: {
-        //     get () {
-        //         return this._bar;
-        //     },
-        //     set (value) {
-        //         this._bar = value;
-        //     }
-        // },
+        crossContextDispatcher: {
+            get () {
+                this._crossContextDispatcher = this._crossContextDispatcher!==undefined?this._crossContextDispatcher:bbfd.Inject.GetInstance(ContextKeys.CROSS_CONTEXT_DISPATCHER);
+                return this._crossContextDispatcher;
+            },
+            set (value) {
+                this._crossContextDispatcher = value;
+            }
+        },
     },
 
     //=======================================================================================
@@ -36,16 +48,17 @@ let CrossContextBridge = cc.Class({
     //=======================================================================================
 
     ctor(){
-        iImplements.ITriggerable("CrossContextBridge").ensureImplements([this]);
-
+        //iImplements.ITriggerable("CrossContextBridge").ensureImplements([this]);
+       // bbfd.debug(this._crossContextDispatcher.ToString());
     },
 
     //=======================================================================================
     // -继承接口方法
     //=======================================================================================
     Trigger(){
-
     }
 
     // update (dt) {},
 });
+
+bbfd.CrossContextBridge = module.exports = CrossContextBridge;

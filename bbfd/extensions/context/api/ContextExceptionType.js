@@ -9,9 +9,9 @@
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
 let ContextExceptionType = cc.Enum({
-    NO_CONTEXT_VIEW:0,
+    NO_CONTEXT_VIEW:'NO_CONTEXT_VIEW',
     /// MVCSContext requires a mediationBinder
-    NO_MEDIATION_BINDER:1
+    NO_MEDIATION_BINDER:'NO_MEDIATION_BINDER'
 })
 
 module.exports = ContextExceptionType;
