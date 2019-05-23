@@ -7,14 +7,14 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-
-var Interface = require("Interface")
+require('../../../../bbfd');
+require('../../../framework/api/Interface');
 
 module.exports = {
     IBaseSignal:function(nm){
-        return new Interface(nm,["Dispatch","AddListener","AddOnce","RemoveListener","RemoveAllListeners","GetTypes"]);//new
+        return new bbfd.Interface(nm,["Dispatch","AddListener","AddOnce","RemoveListener","RemoveAllListeners","GetTypes"]);//new
     },
     ISignal:function(nm){
-        return new Interface(nm,["RemoveAllListeners"]);//new
+        return new bbfd.Interface(nm,["RemoveAllListeners"]);//new
     },
 }

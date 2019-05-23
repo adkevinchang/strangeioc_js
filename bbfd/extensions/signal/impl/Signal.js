@@ -7,11 +7,12 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var implements = require("SignalImplements");
-var BaseSignal = require("BaseSignal");
+require('../../../../bbfd');
+require('../impl/BaseSignal');
 
 let Signal = cc.Class({
-    extends: BaseSignal,
+    name:'bbfd.Signal',
+    extends: bbfd.BaseSignal,
 
     properties: {
         // foo: {
@@ -21,33 +22,59 @@ let Signal = cc.Class({
         //     type: cc.SpriteFrame, // optional, default is typeof default
         //     serializable: true,   // optional, default is true
         // },
-        // bar: {
-        //     get () {
-        //         return this._bar;
-        //     },
-        //     set (value) {
-        //         this._bar = value;
-        //     }
-        // },
+        //Delegate
+        Listener: {
+            get () {
+                return this._Listener;
+            }
+        },
+        //Delegate
+        OnceListener: {
+            get () {
+                return this._OnceListener;
+            }
+        },
     },
-
     Dispatch(){
-
+        if(this.Listener != null)
+        {
+            this.Listener.invoke(this);
+        }
+        if(this.OnceListener != null)
+        {
+            this.OnceListener.invoke(this);
+        }
+        this._OnceListener = null;
+        this._super(null);
     },
-    AddListener(){
-
+    AddListener(callback){
+        this._Listener = this.AddUnique(this.Listener,callback);
     },
-    AddOnce(){
-
+    AddOnce(callback){
+        this._OnceListener = this.AddUnique(this.OnceListener,callback);
     },
-    RemoveListener(){
-
+    AddUnique(listeners,callback){
+        if(callback != null)
+        {
+            //委托增加的触发回调函数
+        }
+        return listeners;
+    },
+    RemoveListener(callback){
+        if(callback!=null)
+        {
+            //this.Listener委托减少的触发回调函数
+        }
     },
     RemoveAllListeners(){
-
+        this._Listener = null;
+        this._OnceListener = null;
+        this._super();
     },
     GetTypes(){
-
+        let types = [];
+        return types;
     }
-    
 });
+
+bbfd.Signal = module.exports = Signal;
