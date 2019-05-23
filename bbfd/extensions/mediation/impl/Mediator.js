@@ -7,22 +7,17 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var implements = require("MediationImplements")
+require('../../../../bbfd');
+require('../../../framework/api/Inject');
+const iimplements = require("../api/MediationImplements");
+const ContextKeys = require('../../context/api/ContextKeys');
 
 let Mediator = cc.Class({
     extends: cc.Component,
-
     properties: {
-        // foo: {
-        //     // ATTRIBUTES:
-        //     default: null,        // The default value will be used only when the component attaching
-        //                           // to a node for the first time
-        //     type: cc.SpriteFrame, // optional, default is typeof default
-        //     serializable: true,   // optional, default is true
-        // },
         contextView: {
             get () {
-                return this._contextView;
+                return this._contextView?this._contextView:this._contextView = bbfd.Inject.Injecting('bbfd.Mediator','contextView',cc.Node,ContextKeys.CONTEXT_VIEW);
             },
             set (value) {
                 this._contextView = value;
@@ -35,27 +30,32 @@ let Mediator = cc.Class({
     // 构造函数中初始化实现的接口方法
     //=======================================================================================
     ctor(){
-        implements.IMediator("Mediator").ensureImplements([this]);
-
+        iimplements.IMediator("Mediator").ensureImplements([this]);
     },
 
     //=======================================================================================
     // -继承接口方法
     //=======================================================================================
+    //view的 start函数在此函数之后onLoad函数在中介Trigger之前
     PreRegister(){
 
     },
+    //view的 start函数在此函数之后onLoad函数在中介Trigger之前
     OnRegister(){
 
     },
-    OnRemove(){
+    onDestroy(){
 
     },
-    OnEnabled(){
+    onEnable(){
 
     },
-    OnDisabled(){
+    onDisable(){
 
+    },
+    ToString() {
+        return 'path:bbfd/extensions/mediation/impl/Mediator' + ' name:' + this.name;
     }
-
 });
+
+bbfd.Mediator = module.export = Mediator;

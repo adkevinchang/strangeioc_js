@@ -7,21 +7,28 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-
-var View = require("View");
+require('../../../../bbfd');
+require('../impl/View');
+require('../../../framework/api/Inject');
+const DispatcherImplements = require('../../dispatcher/api/DispatcherImplements');
 
 let EventView = cc.Class({
-    extends: View,
-
+    extends: bbfd.View,
     properties: {
         dispatcher: {
             get () {
-                return this._dispatcher;
+                //注入者初始化注入绑定者
+                return this._dispatcher?this._dispatcher:this._dispatcher = bbfd.Inject.Injecting('bbfd.EventView','dispatcher',DispatcherImplements.IEventDispatcher);
             },
             set (value) {
                 this._dispatcher = value;
-            }
+            },
+            visible:false
         },
     },
-
+    ToString() {
+        return 'path:bbfd/extensions/mediation/impl/EventView' + ' name:' + this.name;
+    }
 });
+
+bbfd.EventView = module.exports = EventView;

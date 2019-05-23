@@ -7,11 +7,12 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-var MediationBinder = require("MediationBinder")
+require('../../../bbfd');
+require('../../extensions/mediation/impl/MediationBinder');
 
 let SignalMediationBinder = cc.Class({
-    extends: MediationBinder,
-
+    name:'bbfd.SignalMediationBinder',
+    extends: bbfd.MediationBinder,
     properties: {
         // foo: {
         //     // ATTRIBUTES:
@@ -29,7 +30,7 @@ let SignalMediationBinder = cc.Class({
         //     }
         // },
     },
-
-    // LIFE-CYCLE CALLBACKS:
+    // LIFE-CYCLE CALLBACKS: 
     
 });
+bbfd.SignalMediationBinder = module.exports = SignalMediationBinder;

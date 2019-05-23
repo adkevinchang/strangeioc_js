@@ -7,35 +7,38 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-
-var Interface = require("Interface")
+require('../../../../bbfd')
+require('../../../framework/api/Interface')
 
 module.exports = {
     ITriggerable:function(nm){
-        return new Interface(nm,["Trigger"]);
+        return new bbfd.Interface(nm,["Trigger"]);
     },
     IEventBinding:function(nm){
-        return new Interface(nm,["TypeForCallback","To"]);//new
+        return new bbfd.Interface(nm,["TypeForCallback","To"]);//new
     },
     IEventDispatcher:function(nm){
-        return new Interface(nm,["Bind","AddListener","RemoveListener","HasListener","UpdateListener","ReleaseEvent"]);
+        return new bbfd.Interface(nm,["Bind","AddListener","RemoveListener","HasListener","UpdateListener","ReleaseEvent"]);
     },
     ITriggerProvider:function(nm){
-        return new Interface(nm,["AddTriggerable","RemoveTriggerable"]);//get
+        return new bbfd.Interface(nm,["AddTriggerable","RemoveTriggerable"]);//get
     },
     IDispatcher:function(nm){
-        return new Interface(nm,["Dispatch","To"]);//new
+        return new bbfd.Interface(nm,["Dispatch","To"]);//new
     },
     IEvent:function(nm){
-        return new Interface(nm,["Dispatch","To"]);//new
+        return new bbfd.Interface(nm,["Dispatch","To"]);//new
     },
     IMediationBinder:function(nm){
-        return new Interface(nm,["Trigger","BindView"]);//new
+        return new bbfd.Interface(nm,["Trigger","BindView"]);//new
     },
     IMediator:function(nm){
-        return new Interface(nm,["PreRegister","OnRegister","OnRemove","OnEnabled","OnDisabled"]);
+        return new bbfd.Interface(nm,["PreRegister","OnRegister","onDestroy","onEnable","onDisable"]);
     },
     IMediationBinding:function(nm){
-        return new Interface(nm,["ToMediator","ToAbstraction"]);
+        return new bbfd.Interface(nm,["ToMediator","ToAbstraction"]);
+    },
+    IView:function(nm){
+        return new bbfd.Interface(nm,['getImplement']);
     }
 }

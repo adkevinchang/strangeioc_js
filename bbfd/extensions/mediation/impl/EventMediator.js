@@ -7,19 +7,29 @@
 // Learn life-cycle callbacks:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] https://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-//var Mediator = require("Mediator");
+require('../../../../bbfd');
+require('../../../framework/api/Inject');
+require('../../mediation/impl/Mediator');
+const imp = require('../../dispatcher/api/DispatcherImplements');
+const ContextKeys = require('../../context/api/ContextKeys');
 
 let EventMediator = cc.Class({
-    extends: cc.Object,
+    name:'bbfd.EventMediator',
+    extends: bbfd.Mediator,
     properties: {
         dispatcher: {
             get() {
-                return this._dispatcher;
+                //注入者初始化注入绑定者
+                return this._dispatcher? this._dispatcher: this._dispatcher = bbfd.Inject.Injecting('bbfd.EventMediator','dispatcher',imp.IEventDispatcher,ContextKeys.CONTEXT_DISPATCHER);
             },
             set(value) {
                 this._dispatcher = value;
             }
         },
     },
-
+    ToString() {
+        return 'path:bbfd/extensions/mediation/impl/EventMediator' + ' name:' + this.name;
+    }
 });
+
+bbfd.EventMediator = module.exports = EventMediator;
