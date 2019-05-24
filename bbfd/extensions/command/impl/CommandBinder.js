@@ -84,7 +84,8 @@ let CommandBinder = cc.Class({
         return new bbfd.CommandBinding(bbfd.createDelegate(this, this.resolver));
     },
     ReactTo(trigger, data) {
-        bbfd.debug('CommandBinder:ReactTo:'+this.ToString());
+       bbfd.debug('CommandBinder:ReactTo:'+trigger);
+      // bbfd.print(trigger);
         if (PoolImplements.IPoolable('CommandBinder').ensureImplements([data])) {
             //data.Retain();
         }
@@ -114,7 +115,7 @@ let CommandBinder = cc.Class({
         else {
             this.disposeOfSequencedData(data);
             if (binding.isOneOff) {
-                this.Unbind(binding);
+                this.Unbind(binding.key,binding.name);
             }
         }
     },
@@ -144,21 +145,21 @@ let CommandBinder = cc.Class({
         return command;
     },
     getCommand(type) {
-        if (this.usePooling && this.pools.ContainsKey(type)) {
-            var pool = this.pools[type];
-            var command = pool.GetInstance();
-            if (command.IsClean) {
-                injectionBinder.injector.Inject(command);
-                command.IsClean = false;
-            }
+        // if (this.usePooling && this.pools[type]) {
+        //     var pool = this.pools[type];
+        //     var command = pool.GetInstance();
+        //     if (command.IsClean) {
+        //         injectionBinder.injector.Inject(command);
+        //         command.IsClean = false;
+        //     }
+        //     return command;
+        // }
+        // else {
+            this.injectionBinder.Bind(commandImplements.ICommand).To(type);
+            var command = this.injectionBinder.GetInstance(commandImplements.ICommand);
+            this.injectionBinder.Unbind(commandImplements.ICommand);
             return command;
-        }
-        else {
-            injectionBinder.Bind(commandImplements.ICommand).To(type);
-            var command = injectionBinder.GetInstance(commandImplements.ICommand);
-            injectionBinder.Unbind(commandImplements.ICommand);
-            return command;
-        }
+        //}
     },
     trackCommand(command, binding) {
         bbfd.debug('CommandBinder:trackCommand:'+'//'+command+"//"+binding);

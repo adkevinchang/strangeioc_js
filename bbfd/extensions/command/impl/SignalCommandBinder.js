@@ -22,26 +22,28 @@ let SignalCommandBinder = cc.Class({
         //     type: cc.SpriteFrame, // optional, default is typeof default
         //     serializable: true,   // optional, default is true
         // },
-        // bar: {
-        //     get () {
-        //         return this._bar;
-        //     },
-        //     set (value) {
-        //         this._bar = value;
-        //     }
-        // },
+        reactToCallBack: {
+            get () {
+                return this._bar;
+            },
+            set (value) {
+                this._bar = value;
+            }
+        },
     },
-    ResolveBinding (binding,key) {
+    ResolveBinding(binding,key) {
         this._super(binding,key);
         if(this.bindings[key])
         {
+            //bbfd.debug('SignalCommandBinder-ResolveBinding:'+key);
             if(imp.IBaseSignal("SignalCommandBinder").ensureImplements([key]))
             {
                 let signal = key;
-                signal.AddListener(bbfd.createDelegate(this, this.ReactTo));
-            }else
-            {
-                throw new Error('SignalCommandBinder Bind() "key" Type, must is IBaseSignal!');
+                if(this.reactToCallBack === undefined||this.reactToCallBack === null)
+                {
+                    this.reactToCallBack = bbfd.EventCallBack(this, this.ReactTo);
+                }
+                signal.AddListener(this.reactToCallBack);
             }
         }
     },
@@ -49,12 +51,17 @@ let SignalCommandBinder = cc.Class({
     {
        for (const key in this.bindings) {
            if (this.bindings.hasOwnProperty(key)) {
-               const signal = key;
-               signal.RemoveListener(bbfd.createDelegate(this, this.ReactTo));//移除对应的委托
+               //if(key is signal)
+               if(imp.IBaseSignal("SignalCommandBinder").ensureImplements([key]))
+               {
+                    const signal = key;
+                    signal.RemoveListener(this.reactToCallBack);//移除对应的委托
+               }
            }
        }
     },
     invokeCommand(cmd,binding,data,depth){
+        bbfd.debug('invokeCommand:'+typeof cmd);
         let signal = binding.key;
         let command = this.createCommandForSignal(cmd,data,signal.GetTypes());
         command.sequenceId = depth;
@@ -72,24 +79,39 @@ let SignalCommandBinder = cc.Class({
         //injectionBinder 清除绑定处理
         return command;
     },
-    GetBinding(){
-        this._super(bbfd.Signal);
-    },
     Bind(key)
     {
-        if(!imp.IBaseSignal("SignalCommandBinder").ensureImplements([key]))
+        let binding = this.injectionBinder.GetBinding(key);
+        let signal = null;
+        if(typeof key === 'function'||typeof key === 'string')
         {
-            throw new Error('SignalCommandBinder Bind() "key" Type, must is IBaseSignal!');
+            if(binding === null){
+                binding = this.injectionBinder.Bind(key);
+                binding.ToSingleton();
+            }
+            signal = this.injectionBinder.GetInstance(key);
+            
         }
+        signal = signal?signal:key;
         //signal 实例化 
-        return this._super(key);
+        return this._super(signal);
     },
     Unbind(key,name)
     {
         if(this.bindings[key])
         {
-            const signal = key;
-            signal.RemoveListener(bbfd.createDelegate(this, this.ReactTo));//移除对应的委托
+            let signal = null;
+            if(typeof key === 'function'||typeof key === 'string')
+            {
+                if(binding === null){
+                    binding = this.injectionBinder.Bind(key);
+                    binding.ToSingleton();
+                }
+                signal = this.injectionBinder.GetInstance(key);
+                
+            }
+            signal = signal?signal:key;
+            signal.RemoveListener(this.reactToCallBack);//移除对应的委托
         }
         this._super(key,name);
     },
