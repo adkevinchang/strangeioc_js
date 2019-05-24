@@ -80,13 +80,6 @@ let MVCSContext = cc.Class({
         },
     },
 
-    // LIFE-CYCLE CALLBACKS:
-
-    // onLoad () {},
-
-    start() {
-
-    },
     //view cc.Component
     SetContextView(view) {
         //bbfd.debug('MVCSContext SetContextView:');
@@ -97,13 +90,14 @@ let MVCSContext = cc.Class({
         }
         return this
     },
+
     addCoreComponents() {
         this._super();
         this.injectionBinder.Bind(imp.IInstanceProvider).Bind(injectorImp.IInjectionBinder).ToValue(this.injectionBinder);
         this.injectionBinder.Bind(contextImp.IContext).ToValue(this).ToName(ContextKeys.CONTEXT);
         this.injectionBinder.Bind(commandImp.ICommandBinder).To(bbfd.SignalCommandBinder).ToSingleton();
         this.injectionBinder.Bind(dispatcherImp.IEventDispatcher).To(bbfd.EventDispatcher);
-        bbfd.debug('MVCSContext-addCoreComponents2');
+        //bbfd.debug('MVCSContext-addCoreComponents2');
         this.injectionBinder.Bind(dispatcherImp.IEventDispatcher).To(bbfd.EventDispatcher).ToSingleton().ToName(ContextKeys.CONTEXT_DISPATCHER);
         this.injectionBinder.Bind(mediaImp.IMediationBinder).To("bbfd.SignalMediationBinder").ToSingleton();
         //var obj1 = this.injectionBinder.GetInstance(contextImp.IContext,ContextKeys.CONTEXT);
