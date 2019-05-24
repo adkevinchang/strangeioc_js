@@ -36,16 +36,34 @@ let Signal = cc.Class({
         },
     },
     Dispatch(){
-        if(this.Listener != null)
+        //bbfd.debug('====================================================================signal-Dispatch');
+        if(this.Listener != null||this.Listener != undefined)
         {
-            this.Listener.invoke(this);
+            if(arguments)
+            {
+                this.Listener.invoke(this,arguments);
+            }else{
+                this.Listener.invoke(this);
+            }
         }
-        if(this.OnceListener != null)
+        if(this.OnceListener != null||this.OnceListener != undefined)
         {
-            this.OnceListener.invoke(this);
+            if(arguments)
+            {
+                this.OnceListener.invoke(this,arguments);
+            }else{
+                this.OnceListener.invoke(this);
+            }
         }
         this._OnceListener = null;
-        this._super(null);
+        this._super();
+    },
+    AddMultiListener(ctarget,callbackfun){
+        if(this.Listener === null || this.Listener === undefined)
+        {
+            throw new Error('Signal Listener is null! use AddListener()');
+        }
+        this.Listener.Add(ctarget,callbackfun);
     },
     AddListener(callback){
         this._Listener = this.AddUnique(this.Listener,callback);
@@ -54,19 +72,40 @@ let Signal = cc.Class({
         this._OnceListener = this.AddUnique(this.OnceListener,callback);
     },
     AddUnique(listeners,callback){
-        if(callback != null)
-        {
-            //委托增加的触发回调函数
-        }
-        return listeners;
+       //如果之前存在，将替换之前的callback
+       if(callback != null)
+       {
+           listeners = callback;
+       }
+       return listeners;
     },
     RemoveListener(callback){
-        if(callback!=null)
+        if(this.Listener === callback)
         {
-            //this.Listener委托减少的触发回调函数
+            this._Listener = null;
+        }
+        if(this.OnceListener === callback)
+        {
+            this._OnceListener = null;
         }
     },
+    RemoveMultiListener(ctarget,callbackfun){
+        if(this.Listener === null || this.Listener === undefined)
+        {
+            throw new Error('Signal Listener is null! use AddListener()');
+        }
+        this.Listener.remove(ctarget,callbackfun);
+        this._super();
+    },
     RemoveAllListeners(){
+        if(this.Listener != null||this.Listener != undefined)
+        {
+            this.Listener.removeAll();
+        }
+        if(this.OnceListener != null||this.OnceListener != undefined)
+        {
+            this.OnceListener.removeAll();
+        }
         this._Listener = null;
         this._OnceListener = null;
         this._super();
@@ -74,6 +113,12 @@ let Signal = cc.Class({
     GetTypes(){
         let types = [];
         return types;
+    },
+     /**
+     *输出类路径与名字
+     */
+    ToString() {
+        return 'path:bbfd/extensions/signal/impl/Signal' + ' name:' + this.name;
     }
 });
 

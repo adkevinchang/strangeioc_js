@@ -22,7 +22,7 @@ let BaseSignal = cc.Class({
         //     type: cc.SpriteFrame, // optional, default is typeof default
         //     serializable: true,   // optional, default is true
         // },
-        //Delegate
+        //Delegate 里面可以动态添加委托对象
         BaseListener: {
             get () {
                 return this._BaseListener;
@@ -48,24 +48,45 @@ let BaseSignal = cc.Class({
     //=======================================================================================
     // -继承接口方法
     //=======================================================================================
-    Dispatch(args){
-        if(this.BaseListener != null)
+    Dispatch(){
+        if(this.BaseListener != null||this.BaseListener != undefined)
         {
-            this.BaseListener.invoke(this,args);
+            if(arguments.length > 0)
+            {
+                this.BaseListener.invoke(arguments);
+            }else{
+                this.BaseListener.invoke();
+            }
         }
-        if(this.OnceBaseListener != null)
+        if(this.OnceBaseListener != null||this.OnceBaseListener != undefined)
         {
-            this.OnceBaseListener.invoke(this,args);
+            if(arguments.length > 0)
+            {
+                this.OnceBaseListener.invoke(arguments);
+            }else{
+                this.OnceBaseListener.invoke();
+            }
         }
         this._OnceBaseListener = null;
     },
+    //此处的callback是动态的委托对象，如果重复添加将替换之前的委托callback
     AddListener(callback){
         this._BaseListener = this.AddUnique(this.BaseListener,callback);
     },
+
+    //为事件委托添加多个函数监听。
+    AddMultiListener(ctarget,callbackfun){
+        if(this.BaseListener === null || this.BaseListener === undefined)
+        {
+            throw new Error('BaseSignal BaseListener is null! use AddListener()');
+        }
+        this.BaseListener.Add(ctarget,callbackfun);
+    },
     AddUnique(listeners,callback){
+        //如果之前存在，将替换之前的callback
         if(callback != null)
         {
-            //委托增加的触发回调函数
+            listeners = callback;
         }
         return listeners;
     },
@@ -73,19 +94,44 @@ let BaseSignal = cc.Class({
         this._OnceBaseListener = this.AddUnique(this.OnceBaseListener,callback);
     },
     RemoveListener(callback){
-        if(callback!=null)
+        if(this.BaseListener === callback)
         {
-            //this.BaseListener委托减少的触发回调函数
+            this._BaseListener = null;
+        }
+        if(this.OnceBaseListener === callback)
+        {
+            this._OnceBaseListener = null;
         }
     },
+    RemoveMultiListener(ctarget,callbackfun){
+        if(this.BaseListener === null || this.BaseListener === undefined)
+        {
+            throw new Error('BaseSignal BaseListener is null! use AddListener()');
+        }
+        this.BaseListener.remove(ctarget,callbackfun);
+    },
     RemoveAllListeners(){
+        if(this.BaseListener != null||this.BaseListener != undefined)
+        {
+            this.BaseListener.removeAll();
+        }
+        if(this.OnceBaseListener != null||this.OnceBaseListener != undefined)
+        {
+            this.OnceBaseListener.removeAll();
+        }
         this._BaseListener = null;
         this._OnceBaseListener = null;
     },
     GetTypes(){
         let types = [];
         return types;
-    }
+    },
+    /**
+    *输出类路径与名字
+    */
+   ToString() {
+       return 'path:bbfd/extensions/signal/impl/BaseSignal' + ' name:' + this.name;
+   }
 });
 
 bbfd.BaseSignal = module.exports = BaseSignal;
