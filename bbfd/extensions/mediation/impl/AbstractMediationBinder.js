@@ -46,8 +46,9 @@ let AbstractMediationBinder = cc.Class({
     },
     //触发事件，不同的事件类型做不同的处理。
     Trigger(evt, view) {
+       // bbfd.debug('AbstractMediationBinder-Trigger1-:'+view+'//'+binding+'//'+evt);
         var binding = this.GetBinding(view.constructor);
-        bbfd.debug('AbstractMediationBinder-Trigger-:'+view.constructor+'//'+binding+'//'+evt);
+        bbfd.debug('AbstractMediationBinder-Trigger2-:'+view.constructor+'//'+binding+'//'+evt);
         if (binding != null) {
             switch (evt) {
                 case MediationEvent.ONLOAD:
