@@ -107,6 +107,6 @@ bbfd.deepCopy = function(obj)
 
 //bbfd框架版本
 const frameworkVersion = '1.0.0';
-const frameworkTime = '2019-05-23'
+const frameworkTime = '2019-05-24'
 _global['BbfdFramework'] = bbfd.FRAMEWORK_VERSION = frameworkVersion;
 bbfd.FRAMEWORK_TIME = frameworkTime;
